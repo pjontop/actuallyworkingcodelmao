@@ -94,20 +94,24 @@ void blueleftACTUALauton() {
 
     // second part
     chassis.slew_drive_set(false);
-    chassis.pid_odom_set({{40.72_in, 3.5_in, -155.7_deg}, rev, 127}); // go to the 
-    chassis.pid_drive_set(7_in, 127, false);
+    chassis.pid_odom_set({{40.72_in, 3.5_in, -158_deg}, rev, 127}); // go to the 
 
+    chassis.pid_wait();
+
+    chassis.pid_drive_set(-5_in, 127, false);
     
     chassis.pid_wait();
 
-    const uint32_t shake_end_time = pros::millis() + 3000;
-    while (pros::millis() < shake_end_time) {
-      chassis.pid_drive_set(4_in, 127, false);
-      chassis.pid_wait_quick();
-      chassis.pid_drive_set(-4_in, 127, false);
-      chassis.pid_wait_quick();
-    }
+    // Wait 4 seconds, then drive to (29, -29, -156) with the arm piston activated
+    pros::delay(4000);
+    arm.set(true);
+    chassis.pid_odom_set({{29_in, -29_in, -158_deg}, fwd, 127}, false);
+    chassis.pid_wait();
 
+    // When finished, run outake motor
+    outake.move(-127);
+    pros::delay(1000);
+    outake.move(127);
 
 }
 
